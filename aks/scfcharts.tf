@@ -100,36 +100,6 @@ resource "helm_release" "stratos" {
     depends_on = ["helm_release.scf"]
 }
 
-resource "helm_release" "metrics" {
-    name       = "susecf-metrics"
-    repository = "${data.helm_repository.suse.metadata.0.name}"
-    chart      = "metrics"
-    namespace  = "metrics"
-    wait       = "false"
-
-    values = [
-    "${file("${local.stratos_metrics_config_file}")}"
-    ]
-    set {
-        name = "metrics.username"
-        value = "${var.metrics_username}"
-    }
-    set_sensitive {
-        name = "metrics.password"
-        value = "${var.metrics_password}"
-    }
-    set {
-        name = "kubernetes.apiEndpoint"
-        value = "${var.cap_domain}"
-    }
-    set {
-        name = "cloudFoundry.apiEndpoint"
-        value = "api.${var.cap_domain}"
-    }
-
-    depends_on = ["helm_release.stratos"]
-}
-
 resource "null_resource" "update_stratos_dns" {
 
     provisioner "local-exec" {
